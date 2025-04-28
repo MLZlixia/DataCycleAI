@@ -43,18 +43,6 @@
   - **功能**：根据需求（教育、金融等）编写爬虫规则，支持动态URL生成、反爬策略绕过。
   - **示例代码**（Kamigo）：
     ```python
-    from kamigo import Spider, Field
-
-    class EducationSpider(Spider):
-        name = "education_spider"
-        start_urls = ["https://example.com/education"]
-
-        def parse(self, response):
-            yield {
-                "title": response.css("h1.title::text").get(),
-                "content": response.css("div.content::text").get(),
-                "url": response.url
-            }
     ```
 
 #### **2. 数据处理与评估层**
@@ -63,17 +51,6 @@
   - **功能**：去重、去除噪声、分词、实体识别、格式标准化。
   - **示例代码**（文本清洗）：
     ```python
-    import pandas as pd
-    import spacy
-
-    nlp = spacy.load("en_core_web_sm")
-    df = pd.read_json("raw_data.json")
-
-    def clean_text(text):
-        doc = nlp(text)
-        return " ".join([token.lemma_ for token in doc if not token.is_stop])
-
-    df["cleaned_content"] = df["content"].apply(clean_text)
     ```
 
 - **自动评估**：
@@ -81,11 +58,6 @@
   - **功能**：基于内容相关性、独特性、准确性评分（如0-10分）。
   - **示例代码**（评分逻辑）：
     ```python
-    from flame import Evaluator
-
-    evaluator = Evaluator()
-    scores = evaluator.score(texts=df["cleaned_content"], task="quality")
-    df["score"] = scores
     ```
 
 #### **3. 数据存储与筛选层**
@@ -94,8 +66,6 @@
   - **逻辑**：根据评分阈值（如≥7分）筛选数据，高分数据存入训练库，低分数据丢弃或归档。
   - **示例代码**（数据筛选）：
     ```python
-    filtered_data = df[df["score"] > 7]
-    filtered_data.to_json("training_data.json")
     ```
 
 #### **4. 模型训练与优化层**
@@ -107,16 +77,6 @@
     3. 保存最优模型。
   - **示例代码**：
     ```python
-    from transformers import Trainer, TrainingArguments
-
-    training_args = TrainingArguments(output_dir="models")
-    trainer = Trainer(
-        model=model,
-        args=training_args,
-        train_dataset=filtered_data,
-        tokenizer=tokenizer
-    )
-    trainer.train()
     ```
 
 #### **5. 模型部署与服务层**
